@@ -7,6 +7,7 @@ import os
 
 # Add the 'src' directory to the Python path
 sys.path.append(os.path.abspath("src"))
+
 from mainPackage import weather
 from testWeather import TestWeatherFunctions
 
@@ -37,14 +38,10 @@ def run_tests_and_report():
         writer = csv.writer(file)
         writer.writerow(['Test Name', 'Outcome', 'Execution Time', 'Coverage'])
 
-        for test, outcome in test_result.failures + test_result.errors:
-            test_name = test.id().split('.')[-1] if test else 'Unknown'  # Extract the test name or mark as unknown
-            writer.writerow([test_name, 'Fail', execution_time, ''])
-
         for test in suite:
-            test_name = test.id().split('.')[-1] if test else 'Unknown'  # Extract the test name or mark as unknown
-            if test_name not in [fail[0]._testMethodName for fail in test_result.failures]:
-                writer.writerow([test_name, 'Pass', execution_time, ''])
+            test_name = test.id().split('.')[-1] if test else 'Unknown'
+            outcome = "Pass" if test_name not in test_result.failures else "Fail"
+            writer.writerow([test_name, outcome, execution_time, ''])
 
 if __name__ == "__main__":
     run_tests_and_report()

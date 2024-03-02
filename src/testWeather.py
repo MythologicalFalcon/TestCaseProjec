@@ -1,10 +1,9 @@
 import sys
 import os
 import pandas as pd
-
 import unittest
 
-# Add the 'Src' directory to the Python path
+# Add the 'src' directory to the Python path
 sys.path.append(os.path.abspath("src"))
 from mainPackage import weather
 
@@ -36,22 +35,26 @@ class TestWeatherFunctions(unittest.TestCase):
         self.df = pd.DataFrame(data)
 
     def test_getMinTemp(self):
-        self.assertIsNotNone(weather.getMinTemp(self.df))
+        """Test case for getting minimum temperature."""
+        self.assertIsNotNone(weather.get_min_temp(self.df))
 
     def test_getMaxTemp(self):
-        self.assertIsNotNone(weather.getMaxTemp(self.df))
+        """Test case for getting maximum temperature."""
+        self.assertIsNotNone(weather.get_max_temp(self.df))
 
     def test_avgTemp(self):
-        self.assertIsNotNone(weather.avgTemp(self.df))
+        """Test case for calculating average temperature."""
+        self.assertIsNotNone(weather.avg_temp(self.df))
 
     def test_calculate_average_all_ones(self):
+        """Test case for calculating average of all ones."""
         row = pd.Series(1, index=self.df.columns)
         self.assertIsNotNone(weather.calculate_average(row))
 
     def test_calculate_average_all_zero(self):
+        """Test case for calculating average of all zeros."""
         row = pd.Series(0, index=self.df.columns)
         self.assertIsNotNone(weather.calculate_average(row))
-        print("Execution of test Completed")
 
     # Add more test cases for calculate_average function covering different scenarios
 
