@@ -1,4 +1,10 @@
 import pandas as pd
+import os
+import sys
+sys.path.append(os.path.abspath("src"))
+
+from reportGen import run_tests_and_report
+from mainPackage import DataHandle      
 
 def get_columns(df):
     return df.columns
@@ -25,13 +31,16 @@ def calculate_average(row):
 
 def read_data():
     df = pd.read_csv('src/resources/weather.csv')
+
+    return df
+
+if __name__ == "__main__":
+    df = read_data()
     print(df.head())
+    df = DataHandle.handlingNullData(df)
     print(get_columns(df))
     print(get_min_temp(df))
     print(get_max_temp(df))
     print(avg_temp(df))
     df['average'] = df.apply(calculate_average, axis=1)
     print(df['average'].head())
-
-if __name__ == "__main__":
-    read_data()

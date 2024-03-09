@@ -1,5 +1,6 @@
 import sys
 import os
+import pandas as pd
 # Add the 'src' directory to the Python path
 sys.path.append(os.path.abspath("src"))
 
@@ -7,10 +8,10 @@ sys.path.append(os.path.abspath("src"))
 from mainPackage import weather
 from testWeather import TestWeatherFunctions
 from reportGen import run_tests_and_report
-
+from mainPackage import DataHandle
 def main():
     # Use functions from weather.py
-    weather.read_data()
+    df = weather.read_data()
 
     run_tests_and_report()
 
