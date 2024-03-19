@@ -55,27 +55,63 @@ def is_preprocessed(data):
 
     return True
 
-def randomForestClassifier(df):
-    df['Function_Coverage'] = df['Function_Coverage'].str.rstrip('%').astype(float) / 100.0
-    df['Maximum Subarray Sum'] = pd.to_numeric(df['Maximum Subarray Sum'], errors='coerce')
-    df['Execution_Time'] = pd.to_numeric(df['Execution_Time'], errors='coerce')
-    df = df.dropna()
-    df['Input'] = df['Input'].apply(lambda x: len(eval(x)))
+
+def randomForestClassifier(df_train, df_test):
+    # Preprocess the training data
+    df_train['Function_Coverage'] = df_train['Function_Coverage'].str.rstrip('%').astype(float) / 100.0
+    df_train['Maximum Subarray Sum'] = pd.to_numeric(df_train['Maximum Subarray Sum'], errors='coerce')
+    df_train['Execution_Time'] = pd.to_numeric(df_train['Execution_Time'], errors='coerce')
+    df_train = df_train.dropna()
+    df_train['Input'] = df_train['Input'].apply(lambda x: len(eval(x)))
     label_encoder = LabelEncoder()
-    df['Adequacy_Label'] = label_encoder.fit_transform(df['Adequacy_Label'])
-    numeric_columns = ['Input', 'Maximum Subarray Sum', 'Branch_Coverage', 'Statement_Coverage','Function_Coverage', 'Execution_Time', 'Adequacy_Score', 'Adequacy_Label']
-    df = df[numeric_columns].astype(float)
-    X = df.drop('Adequacy_Label', axis=1)
-    y = df['Adequacy_Label']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=50)
-    rf_classifier = RandomForestClassifier(n_estimators=10000, random_state=50)
+    df_train['Adequacy_Label'] = label_encoder.fit_transform(df_train['Adequacy_Label'])
+
+    # Select numeric columns for training
+    numeric_columns = ['Input', 'Maximum Subarray Sum', 'Branch_Coverage', 'Statement_Coverage',
+                       'Function_Coverage', 'Execution_Time', 'Adequacy_Score', 'Adequacy_Label']
+    df_train = df_train[numeric_columns].astype(float)
+
+    # Split the training data into features (X) and target labels (y)
+    X_train = df_train.drop('Adequacy_Label', axis=1)
+    y_train = df_train['Adequacy_Label']
+
+    # Train a Random Forest classifier
+    rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)  # You can adjust the parameters
     rf_classifier.fit(X_train, y_train)
+
+    # Preprocess the test data
+    df_test['Function_Coverage'] = df_test['Function_Coverage'].str.rstrip('%').astype(float) / 100.0
+    df_test['Maximum Subarray Sum'] = pd.to_numeric(df_test['Maximum Subarray Sum'], errors='coerce')
+    df_test['Execution_Time'] = pd.to_numeric(df_test['Execution_Time'], errors='coerce')
+    df_test = df_test.dropna()
+    df_test['Input'] = df_test['Input'].apply(lambda x: len(eval(x)))
+    df_test['Adequacy_Label'] = label_encoder.transform(df_test['Adequacy_Label'])  # Use transform instead of fit_transform
+
+    # Select numeric columns for testing
+    df_test = df_test[numeric_columns].astype(float)
+
+    # Split the test data into features (X_test) and target labels (y_test)
+    X_test = df_test.drop('Adequacy_Label', axis=1)
+    y_test = df_test['Adequacy_Label']
+
+    # Predict labels for the test data
     y_pred = rf_classifier.predict(X_test)
+
+    # Calculate accuracy of the model
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy:", accuracy)
 
+    # Return predicted labels for the test data
+    print( y_pred)
+
+
+
+
+
 
 df = pd.read_csv('./src/resources/final_test_dataset_RF.csv')
+df1 = pd.read_csv('./src/resources/sampletestData.csv')
+
 data = df.values.tolist()
 
 if is_preprocessed(data):
@@ -84,6 +120,6 @@ if is_preprocessed(data):
 else:
     # Call the preprocessing function
     print("The data is not preprocessed.")
-    randomForestClassifier(df)
+    randomForestClassifier(df,df1)
 
 
